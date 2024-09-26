@@ -7,19 +7,22 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class IncomeSerializer(serializers.ModelSerializer):
+    account_type = serializers.ReadOnlyField(source='account.account_type')
     class Meta:
         model = Income
-        fields = "__all__"
+        fields = ['id', 'account_type', 'date', 'amount']
+
 
 class ExpenseSerializer(serializers.ModelSerializer):
     account_type = serializers.ReadOnlyField(source='account.account_type')  
 
     class Meta:
         model = Expense
-        fields = ['id', 'date', 'amount', 'category', 'description', 'account_type'] 
+        fields = ['id', 'date', 'account_type', 'amount', 'category', 'description'] 
 
 
 class TransactionHistorySerializer(serializers.ModelSerializer):
+    account_type = serializers.ReadOnlyField(source='account.account_type')  
     class Meta:
         model = TransactionHistory
-        fields = "__all__"
+        fields = ['id','date',  'account_type', 'transaction_type', 'amount', 'description']
