@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
-# Create your models here.
 class Account(models.Model):
     ACCOUNT_TYPES = (('wallet', 'Wallet'), ('bank', 'Bank Account'))
     
@@ -34,7 +32,7 @@ class Expense(models.Model):
         ('health', 'Health'),
         ('education', 'Education'),
         ('gift', 'Gift'),
-        ('bank', 'Bank Account'),  # You can keep this if you need it
+        ('bank', 'Bank Account'),
     )
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     date = models.DateField()
