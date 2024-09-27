@@ -1,4 +1,6 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
+
 import { Meta, Quasar } from "quasar";
 import "@quasar/extras/material-icons/material-icons.css"; // Optional: Import icon set if needed
 
@@ -15,4 +17,5 @@ app.use(Quasar, {
     Meta,
   },
 });
+app.use(createPinia());
 app.mount("#app");

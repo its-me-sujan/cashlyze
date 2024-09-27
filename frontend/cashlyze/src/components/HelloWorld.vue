@@ -1,27 +1,39 @@
 <template>
-  <div>
-    <p class="text-red-500 text-2xl">
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laudantium totam
-      possimus perspiciatis culpa, harum, nam impedit accusamus corporis
-      obcaecati dignissimos, rerum ratione. Hic fugiat corrupti repellat enim.
-      Quidem, ipsum porro!
-    </p>
-    <div class="q-pa-md q-gutter-sm">
-      <button class="bg-red-600">click me</button>
-      <q-btn color="white" text-color="black" label="Standard" />
-      <q-btn color="primary" label="Primary" />
-      <q-btn color="secondary" label="Secondary" />
-      <q-btn color="amber" glossy label="Amber" />
-      <q-btn color="brown-5" label="Brown 5" />
-      <q-btn color="deep-orange" glossy label="Deep Orange" />
-      <q-btn color="purple" label="Purple" />
-      <q-btn class="bg-red-700" />
-    </div>
-  </div>
+  <main>
+    <section class="spacing bg-light">
+      <div>account</div>
+      <div class="container">
+        <div v-for="account in accounts">
+          <p>{{ account.balance }}</p>
+        </div>
+      </div>
+      <div>add Account</div>
+    </section>
+  </main>
 </template>
 
-<script setup>
-import { QBtn } from "quasar";
+<script setup lang="ts">
+import { useAccountStore } from "../stores/account";
+import { computed, onBeforeMount, ref } from "vue";
+
+const loading = ref(false);
+const AccountStore = useAccountStore();
+
+const accounts = computed(() => {
+  return AccountStore.AccountList;
+});
+
+const filter = async (page: number = 1) => {
+  loading.value = true;
+  await AccountStore.getAccount({
+    page: page,
+  });
+  loading.value = false;
+};
+
+onBeforeMount(async () => {
+  await AccountStore.getAccount({});
+});
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>
