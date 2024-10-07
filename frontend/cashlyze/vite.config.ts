@@ -14,7 +14,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
-      "vue-socials": "vue-socials/dist/vue-socials.es.js",
     },
   },
 });
