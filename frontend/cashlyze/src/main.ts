@@ -6,7 +6,7 @@ import "@quasar/extras/material-icons/material-icons.css"; // Optional: Import i
 
 // Import Quasar css
 import "quasar/src/css/index.sass";
-
+import router from "./router";
 import "./styles/index.css";
 import App from "./App.vue";
 
@@ -18,4 +18,5 @@ app.use(Quasar, {
   },
 });
 app.use(createPinia());
+app.use(router);
 app.mount("#app");
