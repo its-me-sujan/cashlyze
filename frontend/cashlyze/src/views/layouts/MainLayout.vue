@@ -34,29 +34,28 @@
         "
       >
         <q-list padding>
-          <q-item
-            to="/"
-            clickable
-            v-ripple
-            active-class="bg-secondary text-white"
-          >
+          <q-item to="/" clickable v-ripple exact active-class="text-primary">
             <q-item-section avatar>
-              <q-icon name="home" />
+              <q-icon name="dashboard" active-class="bg-primary" />
             </q-item-section>
 
-            <q-item-section> Home </q-item-section>
+            <q-item-section> Overview </q-item-section>
           </q-item>
           <q-item
-            to="/advancerequest"
+            to="/accounts"
             clickable
             v-ripple
-            active-class="bg-secondary text-white"
+            exact
+            active-class="text-primary"
           >
             <q-item-section avatar>
-              <q-icon name="assignment" />
+              <q-icon
+                name="account_balance_rounded"
+                active-class="bg-primary"
+              />
             </q-item-section>
 
-            <q-item-section> Advance Request </q-item-section>
+            <q-item-section> Accounts </q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>
