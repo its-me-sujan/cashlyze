@@ -18,7 +18,7 @@ const router = createRouter({
       // meta: {
       //   requiresAuth: true,
       // },
-      component: () => import("../views/layouts/MainLayout.vue"),
+      component: () => import("@/views/layouts/MainLayout.vue"),
       children: [
         {
           path: "/",
@@ -26,7 +26,15 @@ const router = createRouter({
           meta: {
             requiresAuth: true,
           },
-          component: () => import("@/components/UiComponents/Overview.vue"),
+          component: () => import("@/views/pages/Overview.vue"),
+        },
+        {
+          path: "/accounts",
+          name: "Account",
+          meta: {
+            requiresAuth: true,
+          },
+          component: () => import("@/views/pages/Account.vue"),
         },
       ],
     },
