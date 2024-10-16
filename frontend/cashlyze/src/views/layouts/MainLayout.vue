@@ -49,10 +49,7 @@
             active-class="text-primary"
           >
             <q-item-section avatar>
-              <q-icon
-                name="account_balance_rounded"
-                active-class="bg-primary"
-              />
+              <q-icon name="account_balance" active-class="bg-primary" />
             </q-item-section>
 
             <q-item-section> Accounts </q-item-section>
