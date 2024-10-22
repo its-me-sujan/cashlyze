@@ -4,6 +4,7 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-toolbar-title> Overview </q-toolbar-title>
+        <q-btn class="capitalize bg-slate-500" @click="logout">Logout</q-btn>
       </q-toolbar>
     </q-header>
 
@@ -34,7 +35,13 @@
         "
       >
         <q-list padding>
-          <q-item to="/" clickable v-ripple exact active-class="text-primary">
+          <q-item
+            to="/home"
+            clickable
+            v-ripple
+            exact
+            active-class="text-primary"
+          >
             <q-item-section avatar>
               <q-icon name="dashboard" active-class="bg-primary" />
             </q-item-section>
@@ -64,19 +71,23 @@
   </q-layout>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-export default {
-  setup() {
-    const leftDrawerOpen = ref(false);
+const $router = useRouter();
+const leftDrawerOpen = ref(false);
 
-    return {
-      leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
-    };
-  },
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+};
+
+const logout = () => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  localStorage.removeItem("username");
+
+  // Redirect to the login page
+  $router.push("/");
 };
 </script>
