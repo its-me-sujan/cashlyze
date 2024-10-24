@@ -73,21 +73,29 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
-
+import { useRouter, useRoute } from "vue-router";
+import { useQuasar } from "quasar";
+import { useJwtStore } from "@/stores/jwt";
+const $q = useQuasar();
 const $router = useRouter();
+const route = useRoute();
+const JwtStore = useJwtStore();
 const leftDrawerOpen = ref(false);
 
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 };
-
-const logout = () => {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
-  localStorage.removeItem("username");
-
-  // Redirect to the login page
-  $router.push("/");
+const logout = async () => {
+  await JwtStore.clearJWT();
+  $q.notify({
+    message: "Logout successfull",
+    type: "positive",
+    position: "top-right",
+  });
+  if (route.meta.requiresAuth && route.meta.requiresAuth == true) {
+    $router.push({
+      name: "Login",
+    });
+  }
 };
 </script>

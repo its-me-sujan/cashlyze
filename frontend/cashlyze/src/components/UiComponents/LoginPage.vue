@@ -1,80 +1,223 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
-      <h2 class="text-2xl font-semibold text-gray-700 text-center">Login</h2>
+  <div class="flex h-screen">
+    <div class="w-1/2 bg-gradient-to-r from-green-400 to-blue-500"></div>
 
-      <form @submit.prevent="onSubmit" class="mt-6">
-        <div class="mb-4">
-          <label class="block text-gray-600 text-sm font-medium"
-            >Username</label
-          >
-          <input
-            v-model="username"
-            type="text"
-            class="w-full px-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your username"
-          />
+    <div class="w-1/2 bg-white flex items-center justify-center">
+      <div class="p-8 w-3/4 max-w-md">
+        <div class="text-2xl flex justify-center font-bold mb-4">
+          {{ isLogin ? "Login" : "Register" }}
         </div>
 
-        <div class="mb-6">
-          <label class="block text-gray-600 text-sm font-medium"
-            >Password</label
-          >
-          <input
-            v-model="password"
-            type="password"
-            class="w-full px-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your password"
-          />
+        <div v-if="isLogin">
+          <form @submit.prevent="submitLogin">
+            <div class="mb-4">
+              <label class="block text-gray-400 mb-2">Username</label>
+              <input
+                v-model="loginForm.username"
+                type="text"
+                class="w-full bg-gray-200 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-400 mb-2">Password</label>
+              <div class="relative">
+                <input
+                  v-model="loginForm.password"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  class="w-full bg-gray-200 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                  required
+                />
+
+                <q-icon
+                  :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+                  size="18px"
+                  @click="toggleIcon"
+                  class="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2"
+                ></q-icon>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="w-full bg-blue-500 text-white py-2 rounded-md"
+            >
+              Login
+            </button>
+          </form>
         </div>
 
-        <button
-          type="submit"
-          class="w-full py-2 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 transition duration-300"
-        >
-          Login
-        </button>
-      </form>
+        <div v-else>
+          <form @submit.prevent="submitRegister">
+            <div class="mb-4">
+              <label class="block text-gray-400 mb-2">Username</label>
+              <input
+                v-model="registerForm.username"
+                type="text"
+                class="w-full bg-gray-200 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-400 mb-2">Email</label>
+              <input
+                v-model="registerForm.email"
+                type="email"
+                class="w-full bg-gray-200 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-400 mb-2">Password</label>
+              <div class="relative">
+                <input
+                  v-model="registerForm.password"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  class="w-full bg-gray-200 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                  required
+                />
+
+                <q-icon
+                  :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+                  size="18px"
+                  @click="toggleIcon"
+                  class="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2"
+                ></q-icon>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-400 mb-2">Confirm Password</label>
+              <div class="relative">
+                <input
+                  v-model="registerForm.confirmPassword"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  class="w-full bg-gray-200 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                  required
+                />
+
+                <q-icon
+                  :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+                  size="18px"
+                  @click="toggleIcon"
+                  class="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2"
+                ></q-icon>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="w-full bg-green-500 text-white py-2 rounded-md"
+            >
+              Register
+            </button>
+          </form>
+        </div>
+
+        <div class="mt-12 text-sm text-gray-500 flex justify-center">
+          {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
+          <a href="#" @click.prevent="toggleForm" class="text-blue-500 mx-2">{{
+            isLogin ? "Register now" : "Login"
+          }}</a>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useJwtStore } from "../../stores/jwt"; // Import your store
+import { useJwtStore } from "@/stores/jwt";
 import axios from "axios";
 import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 
-const JwtStore = useJwtStore(); // Use the store instance
+const JwtStore = useJwtStore();
 const $q = useQuasar();
 const $router = useRouter();
 
-const username = ref("");
-const password = ref("");
+const isLogin = ref(true);
+const isPasswordVisible = ref(false);
+const loginForm = ref({
+  username: "",
+  password: "",
+});
+const registerForm = ref({
+  username: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+});
 
-const onSubmit = async () => {
-  try {
-    const response = await axios.post("http://127.0.0.1:8000/api/token/", {
-      username: username.value,
-      password: password.value,
-    });
+const toggleForm = () => {
+  isLogin.value = !isLogin.value;
+};
+const toggleIcon = () => {
+  isPasswordVisible.value = !isPasswordVisible.value;
+};
+// const submitLogin = async () => {
+//   // await JwtStore.getJWT({
+//   //   username: username.value,
+//   //   password: password.value,
+//   // });
 
+//   try {
+//     const response = await axios.post(
+//       "http://127.0.0.1:8000/api/token/",
+//       loginForm.value
+//     );
+
+//     $q.notify({
+//       message: "Login successfully",
+//       type: "positive",
+//       position: "top-right",
+//     });
+
+//     localStorage.setItem("access_token", response.data.access);
+//     localStorage.setItem("refresh_token", response.data.refresh);
+
+//     JwtStore.login();
+
+//     $router.push({ name: "Home" });
+//   } catch {
+//     $q.notify({
+//       message: "Invalid Credential",
+//       type: "negative",
+//       position: "top-right",
+//     });
+//   }
+// };
+
+const submitLogin = async () => {
+  await JwtStore.getJWT(loginForm.value);
+  $q.notify({
+    message: "Logged in successfully",
+    type: "positive",
+    position: "top-right",
+  });
+  $router.push({ name: "Home" });
+};
+const submitRegister = async () => {
+  if (registerForm.value.password !== registerForm.value.confirmPassword) {
     $q.notify({
-      message: "Login successfully",
+      message: "Password do not match!",
+      type: "negative",
+      position: "top-right",
+    });
+    return;
+  }
+  try {
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/register/",
+      registerForm.value
+    );
+    $q.notify({
+      message: response.data.message,
       type: "positive",
       position: "top-right",
     });
-
-    localStorage.setItem("access_token", response.data.access);
-    localStorage.setItem("refresh_token", response.data.refresh);
-
-    JwtStore.login(); // Call the login action
-
-    $router.push({ name: "Home" });
-  } catch {
+    registerForm.value = "";
+    toggleForm();
+  } catch (error) {
     $q.notify({
-      message: "Invalid Credential",
+      message: "error registering user",
       type: "negative",
       position: "top-right",
     });
@@ -83,5 +226,5 @@ const onSubmit = async () => {
 </script>
 
 <style scoped>
-/* Additional styles if needed */
+/* Add custom styles if necessary */
 </style>

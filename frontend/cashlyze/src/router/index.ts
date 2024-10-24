@@ -3,6 +3,7 @@
 // import { roleChecker, WaitUntilRefreshed } from "@/utils/jwt.utils";
 import { createRouter, createWebHistory } from "vue-router";
 import { useJwtStore } from "@/stores/jwt";
+import { WaitUntilRefreshed } from "@/utils/jwt.utils";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,8 +41,8 @@ const router = createRouter({
     {
       path: "/:catchAll(.*)", // Catch any undefined route
       redirect: (to) => {
-        const jwtStore = useJwtStore();
-        if (jwtStore.isAuthenticated) {
+        const JwtStore = useJwtStore();
+        if (JwtStore.isLoggedIn) {
           return { name: "Home" }; // Redirect to home if user is authenticated
         } else {
           return { name: "Login" }; // Redirect to login if user is not authenticated
@@ -51,13 +52,21 @@ const router = createRouter({
   ],
 });
 router.beforeEach(async (to, from, next) => {
-  const jwtStore = useJwtStore();
+  const JwtStore = useJwtStore();
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    const isAuthenticated = jwtStore.isAuthenticated; // Or another method to check auth status
+    const isLoggedIn = JwtStore.isLoggedIn; // Or another method to check auth status
 
-    if (!isAuthenticated) {
+    if (!isLoggedIn) {
       next({ name: "Login" });
+    } else {
+      next();
+    }
+  } else if (to.name == "Login") {
+    // Wait if JWT is refreshing
+    await WaitUntilRefreshed();
+    if (JwtStore.loggedIn) {
+      next({ name: "Home" });
     } else {
       next();
     }
