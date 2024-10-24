@@ -12,7 +12,7 @@ router.register(r'accounts', AccountViewset, basename='account')
 urlpatterns = [
     path('',include(router.urls)),
     path('transaction-historys/', TransactionHistoryViewset.as_view(), name='transaction-history'), 
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # /api/token/
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # /api/token/refresh/
+    path('register/', RegisterView.as_view(), name='register'),
+
 
 ]
