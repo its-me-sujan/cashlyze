@@ -61,6 +61,19 @@
 
             <q-item-section> Accounts </q-item-section>
           </q-item>
+          <q-item
+            to="/calender"
+            clickable
+            v-ripple
+            exact
+            active-class="text-primary"
+          >
+            <q-item-section avatar>
+              <q-icon name="event" active-class="bg-primary" />
+            </q-item-section>
+
+            <q-item-section> Calendar </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>
