@@ -3,10 +3,8 @@ from django.contrib.auth.models import User
 
 from budget.choices import AccountType, IncomeCategory, ExpenseCategory, TransactionType
 
-import uuid
 
 class Account(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     account_type = models.CharField(max_length=10, choices=AccountType.choices)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -17,7 +15,6 @@ class Account(models.Model):
         return f"{self.user.username} - {self.account_type} ({self.balance})"
 
 class Income(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     category = models.CharField(max_length=100, choices=IncomeCategory.choices, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="incomes")
@@ -29,7 +26,6 @@ class Income(models.Model):
         return f"{self.amount} to {self.account.account_type}"
 
 class Expense(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     category = models.CharField(max_length=100, choices=ExpenseCategory.choices, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="expenses")
@@ -41,7 +37,6 @@ class Expense(models.Model):
         return f"{self.amount} from {self.account.account_type}"
     
 class Transfer(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     from_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="transfers_from")
     to_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="transfers_to")
@@ -53,7 +48,6 @@ class Transfer(models.Model):
         return f"{self.amount} from {self.from_account} to {self.to_account}"
 
 class TransactionHistory(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="transaction_histories",blank=True, null=True)
     transaction_type = models.CharField(max_length=50, choices=TransactionType.choices, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
