@@ -11,12 +11,9 @@ class ExpenseViewset(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer
     
 class IncomeViewset(viewsets.ModelViewSet):
+    queryset = Income.objects.all()
     serializer_class = IncomeSerializer
 
-    def get_queryset(self):
-        user = self.request.user
-        return Income.objects.filter(account__user=user)
-    
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
             serializer = self.get_serializer(data=request.data)
