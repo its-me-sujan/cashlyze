@@ -11,7 +11,7 @@ class IncomeSerializer(serializers.ModelSerializer):
     account_type = serializers.ReadOnlyField(source='account.account_type')
     class Meta:
         model = Income
-        fields = ['id', 'account_type', 'date', 'amount']
+        fields = ['id','category', 'account', 'amount', 'account_type', 'description', 'date_created']
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
@@ -19,14 +19,14 @@ class ExpenseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Expense
-        fields = ['id', 'date', 'account_type', 'amount', 'category', 'description'] 
+        fields = ['id', 'date_created', 'account_type', 'amount', 'category', 'description'] 
 
 
 class TransactionHistorySerializer(serializers.ModelSerializer):
     account_type = serializers.ReadOnlyField(source='account.account_type')  
     class Meta:
         model = TransactionHistory
-        fields = ['id','date',  'account_type', 'transaction_type', 'amount', 'description']
+        fields = ['id','date_created',  'account_type', 'transaction_type', 'amount', 'description']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
