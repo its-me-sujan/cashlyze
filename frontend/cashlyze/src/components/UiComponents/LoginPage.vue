@@ -24,15 +24,17 @@
               <div class="relative">
                 <input
                   v-model="loginForm.password"
-                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :type="passwordVisibility.login ? 'text' : 'password'"
                   class="w-full bg-gray-200 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
                   required
                 />
 
                 <q-icon
-                  :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+                  :name="
+                    passwordVisibility.login ? 'visibility_off' : 'visibility'
+                  "
                   size="18px"
-                  @click="toggleIcon"
+                  @click="toggleIcon('login')"
                   class="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2"
                 ></q-icon>
               </div>
@@ -71,15 +73,19 @@
               <div class="relative">
                 <input
                   v-model="registerForm.password"
-                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :type="passwordVisibility.register ? 'text' : 'password'"
                   class="w-full bg-gray-200 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
                   required
                 />
 
                 <q-icon
-                  :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+                  :name="
+                    passwordVisibility.register
+                      ? 'visibility_off'
+                      : 'visibility'
+                  "
                   size="18px"
-                  @click="toggleIcon"
+                  @click="toggleIcon('register')"
                   class="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2"
                 ></q-icon>
               </div>
@@ -89,15 +95,17 @@
               <div class="relative">
                 <input
                   v-model="registerForm.confirmPassword"
-                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :type="passwordVisibility.confirm ? 'text' : 'password'"
                   class="w-full bg-gray-200 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
                   required
                 />
 
                 <q-icon
-                  :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+                  :name="
+                    passwordVisibility.confirm ? 'visibility_off' : 'visibility'
+                  "
                   size="18px"
-                  @click="toggleIcon"
+                  @click="toggleIcon('confirm')"
                   class="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2"
                 ></q-icon>
               </div>
@@ -134,7 +142,11 @@ const $q = useQuasar();
 const $router = useRouter();
 
 const isLogin = ref(true);
-const isPasswordVisible = ref(false);
+const passwordVisibility = ref({
+  login: false,
+  register: false,
+  confirm: false,
+});
 const loginForm = ref({
   username: "",
   password: "",
@@ -149,8 +161,8 @@ const registerForm = ref({
 const toggleForm = () => {
   isLogin.value = !isLogin.value;
 };
-const toggleIcon = () => {
-  isPasswordVisible.value = !isPasswordVisible.value;
+const toggleIcon = (x) => {
+  passwordVisibility.value[x] = !passwordVisibility.value[x];
 };
 // const submitLogin = async () => {
 //   // await JwtStore.getJWT({
