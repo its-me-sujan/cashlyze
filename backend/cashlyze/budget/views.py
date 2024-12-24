@@ -12,18 +12,43 @@ from rest_framework.exceptions import PermissionDenied
 class ExpenseViewset(viewsets.ModelViewSet):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(account__user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        user = self.request.user
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        expense = serializer.save()
+
+        account = expense.account
+        account.balance -= expense.amount
+        account.save()
+
+        TransactionHistory.objects.create(
+            user=user,
+            transaction_type="expense",  
+            amount=expense.amount,
+            from_account=account,
+            description=f"Expense deducted: {expense.amount} from {account.name}",
+        )
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class IncomeViewset(viewsets.ModelViewSet):
     queryset = Income.objects.all()
     serializer_class = IncomeSerializer
     permission_classes = [IsAuthenticated]
 
-
+    def get_queryset(self):
+        return super().get_queryset().filter(account__user=self.request.user)
+    
     def create(self, request, *args, **kwargs):
         user = self.request.user
 
-        if not user.is_authenticated:
-            return Response({'message': 'User not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         income = serializer.save()
@@ -31,6 +56,49 @@ class IncomeViewset(viewsets.ModelViewSet):
         account = income.account
         account.balance += income.amount
         account.save()
+
+        TransactionHistory.objects.create(
+            user=user,
+            transaction_type="income", 
+            amount=income.amount,
+            to_account=account,
+            description=f"Income added: {income.amount} to {account.name}",
+        )
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class TransferViewset(viewsets.ModelViewSet):
+    queryset = Transfer.objects.all()
+    serializer_class = TransferSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(from_account__user=self.request.user)
+    
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        user = self.request.user
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        transfer = serializer.save()
+
+        from_account = transfer.from_account
+        from_account.balance -= transfer.amount
+        from_account.save()
+        
+        to_account = transfer.to_account
+        to_account.balance += transfer.amount
+        to_account.save()
+
+        TransactionHistory.objects.create(
+            user=user,
+            transaction_type="transfer", 
+            amount=transfer.amount,
+            from_account=from_account,
+            to_account=to_account,
+            description=f"Transfer: {transfer.amount} from {from_account.name} to {to_account.name}",
+        )
         
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -45,9 +113,13 @@ class AccountViewset(viewsets.ModelViewSet):
 class TransactionHistoryViewset(generics.ListAPIView):
     queryset = TransactionHistory.objects.all()
     serializer_class = TransactionHistorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
 class RegisterView(APIView):
     def post(self, request):
-        print("********")
         print(request.data)
         serializer = RegisterSerializer(data=request.data)
 

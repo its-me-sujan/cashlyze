@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 router = DefaultRouter()
 router.register(r'expenses', ExpenseViewset, basename='expense')
 router.register(r'incomes', IncomeViewset, basename='income')
+router.register(r'transfers', TransferViewset, basename='transfer')
 router.register(r'accounts', AccountViewset, basename='account')
 
 urlpatterns = [
