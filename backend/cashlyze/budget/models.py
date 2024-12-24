@@ -1,18 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import localtime
 
-from budget.choices import AccountType, IncomeCategory, ExpenseCategory, TransactionType
+
+from budget.choices import  IncomeCategory, ExpenseCategory, TransactionType
 
 
 class Account(models.Model):
+    name = models.CharField(max_length=100, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    account_type = models.CharField(max_length=10, choices=AccountType.choices)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.account_type} ({self.balance})"
+        return f"{self.user.username} - {self.name} ({self.balance})"
 
 class Income(models.Model):
     category = models.CharField(max_length=100, choices=IncomeCategory.choices, null=True)
@@ -23,7 +25,7 @@ class Income(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return f"{self.amount} to {self.account.account_type}"
+        return f"{self.amount} to {self.account.name}"
 
 class Expense(models.Model):
     category = models.CharField(max_length=100, choices=ExpenseCategory.choices, null=True)
@@ -34,7 +36,7 @@ class Expense(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return f"{self.amount} from {self.account.account_type}"
+        return f"{self.amount} from {self.account.name}"
     
 class Transfer(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -58,4 +60,5 @@ class TransactionHistory(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return f"{self.transaction_type.capitalize()}: {self.amount} on {self.date_created}"
+        formatted_date = localtime(self.date_created).strftime("%Y-%m-%d")
+        return f"{self.transaction_type.capitalize()}: {self.amount} on {formatted_date}"
