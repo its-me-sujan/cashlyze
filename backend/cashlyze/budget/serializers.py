@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Account, Income, Expense, TransactionHistory
+from .models import Account, Income, Expense, Transfer, TransactionHistory
 from django.contrib.auth.models import User
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -8,25 +8,41 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class IncomeSerializer(serializers.ModelSerializer):
-    account_type = serializers.ReadOnlyField(source='account.account_type')
     class Meta:
         model = Income
-        fields = ['id','category', 'account', 'amount', 'account_type', 'description', 'date_created']
+        fields = ['id','category', 'account', 'amount', 'description', 'date_created']
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
-    account_type = serializers.ReadOnlyField(source='account.account_type')  
 
     class Meta:
         model = Expense
-        fields = ['id', 'date_created', 'account_type', 'amount', 'category', 'description'] 
+        fields = ['id','category', 'account', 'amount', 'description', 'date_created'] 
 
+    def validate(self, attrs):
+        account = attrs['account']
+        if account.balance < attrs['amount']:
+            raise serializers.ValidationError(f'Insufficient balance in {account.name}')
+        return attrs
 
+class TransferSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Transfer
+        fields = ['id', 'from_account', 'to_account', 'amount', 'description', 'date_created'] 
+
+    def validate(self, attrs):
+        account = attrs['from_account']
+        if account.balance < attrs['amount']:
+            raise serializers.ValidationError(f'Insufficient balance in {account.name}')
+        return attrs
+    
+    
 class TransactionHistorySerializer(serializers.ModelSerializer):
-    account_type = serializers.ReadOnlyField(source='account.account_type')  
+    date_created = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = TransactionHistory
-        fields = ['id','date_created',  'account_type', 'transaction_type', 'amount', 'description']
+        fields = ['id','date_created', 'transaction_type', 'amount', 'description']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
