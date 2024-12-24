@@ -1,9 +1,5 @@
 from django.db import models
 
-class AccountType(models.TextChoices):
-    WALLET = ("wallet", "Wallet")
-    BANK = ("bank", "Bank")
-
 class IncomeCategory(models.TextChoices):
     SALARY = ("salary", "Salary")
     BUSINESS = ("business", "Business")
