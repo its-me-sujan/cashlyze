@@ -46,10 +46,30 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class TransactionSerializer(serializers.ModelSerializer):
     date_created = serializers.DateTimeField(format="%Y-%m-%d")
+    user_name = serializers.SerializerMethodField()
+    from_account_name = serializers.SerializerMethodField()
+    from_account_balance = serializers.SerializerMethodField()
+    to_account_name = serializers.SerializerMethodField()
+    to_account_balance = serializers.SerializerMethodField()
     class Meta:
         model = Transaction
-        fields = ['id', 'transaction_type', 'amount', 'income_category', 'expense_category', 'from_account', 'to_account', 'description','date_created']
+        fields = ['id','user','user_name', 'transaction_type', 'amount', 'income_category', 'expense_category', 'from_account', 'from_account_name', 'from_account_balance', 'to_account', 'to_account_name', 'to_account_balance' , 'description','date_created']
 
+    def get_user_name(self, obj):
+        return obj.user.username
+    
+    def get_from_account_name(self, obj):
+        return obj.from_account.name
+    
+    def get_from_account_balance(self, obj):
+        return obj.from_account.balance
+    
+    def get_to_account_name(self, obj): 
+        return obj.to_account.name
+    
+    def get_to_account_balance(self, obj):
+        return obj.to_account.balance
+    
     def validate(self, attrs):
         from_account = attrs.get('from_account')
         amount = attrs.get('amount')
@@ -60,6 +80,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             if from_account == to_account:
                 raise serializers.ValidationError('Source and Destination accounts cannot be the same')
         return attrs
+    
 
     
 
