@@ -4,9 +4,11 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.decorators import action
 
 from django.db import transaction
-from rest_framework.exceptions import PermissionDenied
+from django.db.models import Sum
 
 
 # class ExpenseViewset(viewsets.ModelViewSet):
@@ -109,6 +111,18 @@ class AccountViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
+    
+    def create(self, request, *args, **kwargs):
+        user = self.request.user
+
+        request.data['user'] = user.id
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 
 # class TransactionHistoryViewset(generics.ListAPIView):
 #     queryset = TransactionHistory.objects.all()
