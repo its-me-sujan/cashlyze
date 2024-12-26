@@ -7,24 +7,26 @@ import { queryBuilder } from "../utils/api.utils";
 export const useAccountStore = defineStore("Account", {
   state: () => {
     return {
-      AccountList: {} as Account,
+      AccountList: Array<Account>(),
       AccountEdit: {} as Account,
+      AccountsTotal: 0,
     };
   },
   actions: {
     // setProjectTablePagination(data: QTablePagination) {
     //   this.ColdStorageTablePagination = data;
     // },
-    async getAccount(params: PageFilter) {
+    async getAccount(params: PageFilter = {}) {
       const query = queryBuilder(params as Query);
       const res = await API.getAccount(query);
       this.AccountList = res;
       return res;
     },
-    // async getColdStorageById(id: number) {
-    //   const response = await API.getColdStorageById(id);
-    //   this.IndividualColdStorage = response;
-    // },
+
+    async updateAccount(data: Object, id: number) {
+      return await API.updateAccount(data, id);
+    },
+
     async addAccount(data: Object) {
       return await API.postAccount(data);
     },

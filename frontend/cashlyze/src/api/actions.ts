@@ -7,13 +7,14 @@ export enum Action {
 
   Account = "accounts",
   AccountDetails = "accounts/<id>",
+  AccountsTotal = "accounts/total_balance",
 
-  Income = "incomes",
-  IncomeDetails = "incomes/<id>",
+  // Income = "incomes",
+  // IncomeDetails = "incomes/<id>",
 
-  Expense = "expenses",
-  ExpenseDetails = "expenses/<id>",
+  // Expense = "expenses",
+  // ExpenseDetails = "expenses/<id>",
 
-  TransactionHisotry = "transaction-historys",
-  TransactionHisotryDetails = "transaction-historys/<id>",
+  Transaction = "transaction",
+  TransactionDetails = "transaction/<id>",
 }

@@ -1,6 +1,8 @@
 export interface Account {
   id: number;
-  account_type: string;
-  balance: any;
   user: number;
+  name: string;
+  balance: any;
+  include_account: boolean;
+  date_created: string;
 }

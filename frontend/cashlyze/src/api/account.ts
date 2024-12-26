@@ -9,13 +9,10 @@ export default new (class AccountAPI {
     const response = await getAPI(Action.Account, query);
     return response;
   }
-  //   public async deleteColdStorage(id: number) {
-  //     const url = pathReplacer(Action.ColdStorageDetails, [
-  //       { name: "<id>", value: id },
-  //     ]);
-  //     const response = await deleteAPI(url);
-  //     return response;
-  //   }
+  public async getAccountsTotal(query = "") {
+    const response = await getAPI(Action.AccountsTotal, query);
+    return response;
+  }
   public async getAccountById(id: number) {
     const url = pathReplacer(Action.AccountDetails, [
       { name: "<id>", value: id },
@@ -26,10 +23,10 @@ export default new (class AccountAPI {
   public async postAccount(data: Object) {
     await postAPI(Action.Account, data);
   }
-  //   public async updateColdStorage(data: Object, id: number) {
-  //     const url = pathReplacer(Action.ColdStorageDetails, [
-  //       { name: "<id>", value: id },
-  //     ]);
-  //     await patchAPI(url, data);
-  //   }
+  public async updateAccount(data: Object, id: number) {
+    const url = pathReplacer(Action.AccountDetails, [
+      { name: "<id>", value: id },
+    ]);
+    await patchAPI(url, data);
+  }
 })();
