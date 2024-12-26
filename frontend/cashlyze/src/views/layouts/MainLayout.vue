@@ -22,7 +22,7 @@
           draggable="false"
           class="w-8 h-8 mr-2"
         />
-        <div class="text-lg font-bold select-none">Cashly</div>
+        <div class="text-lg font-bold select-none">Cashlyze</div>
 
         <div class="h-14"></div>
       </header>
