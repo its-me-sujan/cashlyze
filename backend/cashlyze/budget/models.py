@@ -10,6 +10,7 @@ class Account(models.Model):
     name = models.CharField(max_length=100, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    include_account = models.BooleanField(default=True)
 
     date_created = models.DateTimeField(auto_now_add=True, null=True)
 
