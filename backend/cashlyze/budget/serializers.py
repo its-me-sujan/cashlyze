@@ -7,6 +7,12 @@ class AccountSerializer(serializers.ModelSerializer):
         model = Account
         fields = "__all__"
 
+    def validate(self, attrs):
+        request = self.context.get('request')
+        if Account.objects.filter(name=attrs['name'], user=request.user).exists():
+            raise serializers.ValidationError('Account with this name already exists')
+        return attrs
+    
 # class IncomeSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Income
