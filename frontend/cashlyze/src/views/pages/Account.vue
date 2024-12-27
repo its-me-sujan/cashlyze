@@ -48,20 +48,26 @@
               <q-toggle
                 v-model="account.include_account"
                 :label="account.include_account ? 'Normal' : 'Hidden'"
-                @click="updateAccount(account, account.id)"
+                @click="handleIncludeAccount(account)"
               />
             </div>
 
             <div class="flex justify-between">
               <q-btn flat round icon="repeat" size="sm" />
 
-              <q-btn flat round icon="delete" size="sm" />
+              <q-btn
+                flat
+                round
+                icon="delete"
+                size="sm"
+                @click="(showDeleteAccount = true), (delAcc = account)"
+              />
             </div>
           </div>
         </q-card>
       </div>
     </div>
-    <q-dialog v-model="showDialog">
+    <q-dialog v-model="showAddAccount">
       <q-card class="w-[50vw]">
         <q-card-section>
           <div class="text-h6">Add New Account</div>
@@ -69,23 +75,83 @@
 
         <q-card-section>
           <q-input v-model="account.name" label="Account Name" />
-          <q-input v-model="account.balance" label="Initial Amount" />
+          <q-input
+            v-model="account.balance"
+            type="number"
+            label="Initial Amount"
+          />
           <!-- Add more input fields as needed -->
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" @click="showDialog = false" />
+          <q-btn flat label="Cancel" @click="showAddAccount = false" />
           <q-btn flat label="Save" @click="addAccount" />
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <button
-      id="fab_add_new_account"
-      class="btn fixed bottom-8 right-20 w-16 h-16 rounded-full flex items-center justify-center bg-blue-500 text-white"
-      @click="showDialog = true"
-    >
-      <q-icon name="add" size="sm" />
-    </button>
+    <q-dialog v-model="showDeleteAccount">
+      <q-card class="w-[50vw]">
+        <q-card-section>
+          <div class="text-xl font-semibold">
+            DELETE "{{ delAcc.name.toUpperCase() }}"?
+          </div>
+        </q-card-section>
+
+        <q-card-section>
+          <div>
+            <p class="font-bold">
+              Note:
+              <span class="font-normal"
+                >All income and expenses associated with this account will be
+                erased.
+              </span>
+            </p>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-white">
+          <q-btn
+            flat
+            label="Cancel"
+            class="w-[5vw] bg-blue-500 hover:bg-blue-700"
+            @click="showDeleteAccount = false"
+          />
+          <q-btn
+            flat
+            label="Ok"
+            class="w-[5vw] bg-red-500 hover:bg-red-700"
+            @click="deleteAccount(delAcc.id)"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <div class="fixed bottom-20 right-20 space-y-3">
+      <button
+        id="fab_add_new_account"
+        class="btn w-16 h-16 rounded-full flex items-center justify-center bg-blue-500 text-white"
+        @click="saveChanges"
+      >
+        <q-icon name="save" size="sm" />
+        <q-tooltip class="text-sm" anchor="top middle" self="bottom middle">
+          Save Changes
+        </q-tooltip>
+      </button>
+      <button
+        id="fab_add_new_account"
+        class="btn w-16 h-16 rounded-full flex items-center justify-center bg-blue-500 text-white"
+        @click="showAddAccount = true"
+      >
+        <q-icon name="add" size="sm" />
+        <q-tooltip
+          class="text-sm"
+          anchor="top middle"
+          self="bottom middle"
+          arrow
+        >
+          Add New Account
+        </q-tooltip>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -100,30 +166,83 @@ import {
   QBtn,
 } from "quasar";
 import { useAccountStore } from "../../stores/account";
+import { Account } from "../../models/Account.interface";
+import { useQuasar } from "quasar";
 
+const $q = useQuasar();
 const AccountStore = useAccountStore();
 
-const showDialog = ref(false);
+const showChart = ref(false);
+const showAddAccount = ref(false);
+const showDeleteAccount = ref(false);
+
+const updatingAccounts = ref<Account[]>([]);
 const account = ref({
   name: "",
   balance: 0,
   includewallet: true,
 });
+const delAcc = ref({
+  id: 0,
+  name: "",
+});
 
-const showChart = ref(false);
-
-function toggleChart() {
+const toggleChart = () => {
   showChart.value = !showChart.value;
-}
+};
 
 const addAccount = async () => {
-  await AccountStore.addAccount(account.value);
-  showDialog.value = false;
-  await AccountStore.getAccount();
+  try {
+    if (
+      AccountStore.AccountList.some(
+        (acc) => acc.name.toLowerCase() === account.value.name.toLowerCase()
+      )
+    ) {
+      $q.notify({
+        message: "Account already exists",
+        type: "negative",
+        position: "top-right",
+      });
+      return;
+    }
+    await AccountStore.addAccount(account.value);
+    showAddAccount.value = false;
+    account.value = {
+      name: "",
+      balance: 0,
+      includewallet: true,
+    };
+    await AccountStore.getAccount();
+  } catch (error) {
+    $q.notify({
+      message: "Error adding account",
+      type: "negative",
+      position: "top-right",
+    });
+  }
 };
 
 const updateAccount = async (data: object, id: number) => {
   await AccountStore.updateAccount(data, id);
+};
+
+const deleteAccount = async (id: number) => {
+  try {
+    showDeleteAccount.value = false;
+    await AccountStore.deleteAccount(id);
+    await AccountStore.getAccount();
+    $q.notify({
+      message: "Account deleted successfully",
+      type: "positive",
+      position: "top-right",
+    });
+  } catch (error) {
+    $q.notify({
+      message: "Error deleting account",
+      type: "negative",
+      position: "top-right",
+    });
+  }
 };
 
 const accountlist = computed(() => {
@@ -137,6 +256,40 @@ const accounts_total = computed(() => {
     0
   );
 });
+
+const handleIncludeAccount = (account: Account) => {
+  const existingAccount = updatingAccounts.value.find(
+    (item) => item.id === account.id
+  );
+
+  if (!existingAccount) {
+    updatingAccounts.value.push(account);
+  }
+};
+const saveChanges = async () => {
+  if (updatingAccounts.value.length === 0) {
+    return;
+  }
+  const promises = updatingAccounts.value.map((account) =>
+    updateAccount({ include_account: account.include_account }, account.id)
+  );
+
+  try {
+    await Promise.all(promises);
+    updatingAccounts.value = [];
+    $q.notify({
+      message: "Changes saved successfully",
+      type: "positive",
+      position: "top-right",
+    });
+  } catch (error) {
+    $q.notify({
+      message: "Error saving changes",
+      type: "negative",
+      position: "top-right",
+    });
+  }
+};
 
 onMounted(() => {
   AccountStore.getAccount();
