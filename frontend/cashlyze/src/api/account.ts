@@ -9,10 +9,6 @@ export default new (class AccountAPI {
     const response = await getAPI(Action.Account, query);
     return response;
   }
-  public async getAccountsTotal(query = "") {
-    const response = await getAPI(Action.AccountsTotal, query);
-    return response;
-  }
   public async getAccountById(id: number) {
     const url = pathReplacer(Action.AccountDetails, [
       { name: "<id>", value: id },
@@ -28,5 +24,12 @@ export default new (class AccountAPI {
       { name: "<id>", value: id },
     ]);
     await patchAPI(url, data);
+  }
+  public async deleteAccount(id: number) {
+    const url = pathReplacer(Action.AccountDetails, [
+      { name: "<id>", value: id },
+    ]);
+    const response = await deleteAPI(url);
+    return response;
   }
 })();

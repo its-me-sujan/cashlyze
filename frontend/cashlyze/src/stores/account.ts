@@ -33,8 +33,8 @@ export const useAccountStore = defineStore("Account", {
     // async editColdStorage(data: Object, id: number) {
     //   return await API.updateColdStorage(data, id);
     // },
-    // async deleteColdStorage(id: number) {
-    //   await API.deleteColdStorage(id);
-    // },
+    async deleteAccount(id: number) {
+      await API.deleteAccount(id);
+    },
   },
 });
