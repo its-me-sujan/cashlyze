@@ -49,6 +49,19 @@
             <q-item-section> Overview </q-item-section>
           </q-item>
           <q-item
+            to="/transactions"
+            clickable
+            v-ripple
+            exact
+            active-class="text-primary"
+          >
+            <q-item-section avatar>
+              <q-icon name="list" active-class="bg-primary" />
+            </q-item-section>
+
+            <q-item-section> Transactions </q-item-section>
+          </q-item>
+          <q-item
             to="/accounts"
             clickable
             v-ripple
