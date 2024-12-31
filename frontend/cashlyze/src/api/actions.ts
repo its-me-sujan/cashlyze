@@ -15,6 +15,6 @@ export enum Action {
   // Expense = "expenses",
   // ExpenseDetails = "expenses/<id>",
 
-  Transaction = "transaction",
-  TransactionDetails = "transaction/<id>",
+  Transaction = "transactions",
+  TransactionDetails = "transactions/<id>",
 }
