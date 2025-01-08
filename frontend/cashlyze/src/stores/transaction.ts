@@ -11,7 +11,7 @@ export const useTransactionStore = defineStore("Transaction", {
     };
   },
   actions: {
-    async getTransaction(params: PageFilter) {
+    async getTransaction(params: PageFilter = {}) {
       const query = queryBuilder(params as Query);
       const res = await API.getTransaction(query);
       this.TransactionList = res;
